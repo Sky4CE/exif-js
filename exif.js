@@ -592,6 +592,9 @@
                     offset = numValues > 4 ? valueOffset : (entryOffset + 8);
                     vals = [];
                     for (n=0;n<numValues;n++) {
+                        if (offset + n + 1 > file.byteLength) {
+                            break;
+                        }
                         vals[n] = file.getUint8(offset + n);
                     }
                     return vals;
@@ -619,6 +622,9 @@
                 } else {
                     vals = [];
                     for (n=0;n<numValues;n++) {
+                        if (valueOffset + 4*n > file.byteLength) {
+                            break;
+                        }
                         vals[n] = file.getUint32(valueOffset + 4*n, !bigEnd);
                     }
                     return vals;
@@ -650,6 +656,9 @@
                 } else {
                     vals = [];
                     for (n=0;n<numValues;n++) {
+                        if (valueOffset + 4*n > file.byteLength) {
+                            break;  
+                        }
                         vals[n] = file.getInt32(valueOffset + 4*n, !bigEnd);
                     }
                     return vals;
@@ -739,6 +748,9 @@
     function getStringFromDB(buffer, start, length) {
         var outstr = "";
         for (var n = start; n < start+length; n++) {
+            if (n > buffer.byteLength) {
+                break;
+            }
             outstr += String.fromCharCode(buffer.getUint8(n));
         }
         return outstr;
@@ -823,10 +835,12 @@
             for (tag in gpsData) {
                 switch (tag) {
                     case "GPSVersionID" :
-                        gpsData[tag] = gpsData[tag][0] +
-                            "." + gpsData[tag][1] +
-                            "." + gpsData[tag][2] +
-                            "." + gpsData[tag][3];
+                        if (gpsData[tag]) {
+                            gpsData[tag] = gpsData[tag][0] +
+                                "." + gpsData[tag][1] +
+                                "." + gpsData[tag][2] +
+                                "." + gpsData[tag][3];
+                        }
                         break;
                 }
                 tags[tag] = gpsData[tag];
